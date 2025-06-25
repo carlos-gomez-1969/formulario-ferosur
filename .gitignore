@@ -1,0 +1,7 @@
+# Archivos de VS Code
+.vscode/
+
+# Sistemas
+.DS_Store
+Thumbs.db
+

@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>DATOS SOCIOS</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;background:#f3f3f3;margin:0;padding:20px}
+  .card{background:#fff;border-radius:8px;padding:20px;max-width:1350px;margin:auto;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+  .form-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;align-items:center}
+  label{min-width:115px;font-weight:bold}
+  input[type=text],select{padding:6px;font-size:14px;border:1px solid #ccc;border-radius:4px;width:180px}
+  input.highlight,select.highlight{border:2px solid orange}
+  button{padding:8px 18px;font-size:14px;border:none;border-radius:4px;color:#fff;cursor:pointer}
+  .btn-search{background:#007bff}
+  .btn-save{background:#28a745}
+  .btn-clear{background:#17a2b8}
+  .btn-delete{background:#dc3545}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:18px}
+  th,td{border:1px solid #c9c9c9;padding:6px;text-align:left}
+  th{background:#f2f2f2}
+  .logo{float:right;margin-left:20px;width:170px;border:2px solid #1b7e32;border-radius:4px}
+  .radio-group{display:inline-flex;gap:4px;align-items:center}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>DATOS SOCIOS</h2>
+  <img src="logo_ferosur.png" class="logo" alt="Logo Ferosur">
+
+  <div class="form-row">
+    <label for="rut">Rut:</label>
+    <input type="text" id="rut">
+    <button class="btn-search" onclick="buscar()">Buscar / Agregar</button>
+  </div>
+
+  <div class="form-row">
+    <label for="nombre">Nombre:</label><input type="text" id="nombre">
+    <label for="apellidopat">Apellido Paterno:</label><input type="text" id="apellidopat">
+    <label for="apellidomat">Apellido Materno:</label><input type="text" id="apellidomat">
+  </div>
+
+  <div class="form-row">
+    <label for="direccion">Dirección:</label><input type="text" id="direccion">
+    <label for="localidad">Localidad:</label><input type="text" id="localidad">
+    <label for="comuna">Comuna:</label><input type="text" id="comuna">
+  </div>
+
+  <div class="form-row">
+    <label for="club">Club:</label>
+    <select id="club">
+      <option value="">Seleccione un ítem</option>
+      <option>Club A</option><option>Club B</option>
+    </select>
+    <label for="telefono">Teléfono:</label><input type="text" id="telefono">
+    <label for="sexo">Sexo:</label>
+    <select id="sexo">
+      <option value="">Seleccione un ítem</option>
+      <option>Masculino</option><option>Femenino</option>
+    </select>
+    <label>Seguro:</label>
+    <span class="radio-group">
+      <input type="radio" name="seguro" id="segSi" value="si"><label for="segSi">Sí</label>
+      <input type="radio" name="seguro" id="segNo" value="no" checked><label for="segNo">No</label>
+    </span>
+  </div>
+
+  <div class="form-row">
+    <button class="btn-save" onclick="guardar()">Guardar</button>
+    <button class="btn-clear" onclick="limpiar()">Limpiar Campos</button>
+    <button class="btn-delete" onclick="eliminar()">Eliminar</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>RUT</th><th>NOMBRE</th><th>APELLIDOPAT</th><th>APELLIDOMAT</th><th>DIRECCIÓN</th><th>CLUB</th><th>LOCALIDAD</th><th>COMUNA</th><th>TELÉFONO</th><th>SEXO</th><th>SEGURO</th></tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<script>
+const LS_KEY = "socios_rodeo";
+
+// Carga inicial
+window.addEventListener("DOMContentLoaded", cargarTabla);
+
+function obtenerDatos() {
+  return {
+    rut: document.getElementById("rut").value.trim(),
+    nombre: document.getElementById("nombre").value.trim(),
+    apellidopat: document.getElementById("apellidopat").value.trim(),
+    apellidomat: document.getElementById("apellidomat").value.trim(),
+    direccion: document.getElementById("direccion").value.trim(),
+    club: document.getElementById("club").value,
+    localidad: document.getElementById("localidad").value.trim(),
+    comuna: document.getElementById("comuna").value.trim(),
+    telefono: document.getElementById("telefono").value.trim(),
+    sexo: document.getElementById("sexo").value,
+    seguro: document.querySelector("input[name='seguro']:checked").value
+  };
+}
+
+function guardar() {
+  const socio = obtenerDatos();
+  if (!socio.rut) return alert("Debe ingresar RUT");
+  let datos = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+  const idx = datos.findIndex(s => s.rut === socio.rut);
+  idx>=0 ? datos[idx]=socio : datos.push(socio);
+  localStorage.setItem(LS_KEY, JSON.stringify(datos));
+  cargarTabla();
+  limpiar();
+}
+
+function limpiar() {
+  document.querySelectorAll("input, select").forEach(el => {
+    if (el.type==="radio") el.checked = el.id==="segNo";
+    else el.value="";
+    el.classList.remove("highlight");
+  });
+}
+
+function eliminar() {
+  const rut = document.getElementById("rut").value.trim();
+  if (!rut) return;
+  let datos = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+  datos = datos.filter(s=>s.rut!==rut);
+  localStorage.setItem(LS_KEY, JSON.stringify(datos));
+  cargarTabla();
+  limpiar();
+}
+
+function buscar() {
+  const rut = document.getElementById("rut").value.trim();
+  let datos = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+  const socio = datos.find(s=>s.rut===rut);
+  if (socio) {
+    Object.entries(socio).forEach(([k,v])=>{
+      const el = document.getElementById(k);
+      if(el) el.value = v;
+    });
+    document.querySelector(`input[name='seguro'][value='${socio.seguro}']`).checked=true;
+  } else {
+    if (confirm("RUT no encontrado, ¿desea ingresar nuevo socio?")) {
+      resaltarCampos(true);
+    }
+  }
+}
+
+function resaltarCampos(on) {
+  document.querySelectorAll("input, select").forEach(el=>{
+    if(el.id && el.id!=="rut") el.classList.toggle("highlight",on);
+  });
+}
+
+function cargarTabla() {
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML="";
+  const datos = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+  datos.forEach(s=>{
+    const row = `<tr><td>${s.rut}</td><td>${s.nombre}</td><td>${s.apellidopat}</td><td>${s.apellidomat}</td>
+    <td>${s.direccion}</td><td>${s.club}</td><td>${s.localidad}</td><td>${s.comuna}</td>
+    <td>${s.telefono}</td><td>${s.sexo}</td><td>${s.seguro}</td></tr>`;
+    tbody.insertAdjacentHTML("beforeend",row);
+  });
+}
+</script>
+</body>
+</html>
