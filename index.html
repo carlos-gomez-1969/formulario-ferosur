@@ -8,7 +8,15 @@
   body{font-family:Arial,Helvetica,sans-serif;background:#f3f3f3;margin:0;padding:20px}
   .card{background:#fff;border-radius:8px;padding:20px;max-width:1350px;margin:auto;box-shadow:0 2px 6px rgba(0,0,0,.1)}
   .form-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;align-items:center}
-  label{min-width:115px;font-weight:bold}
+  /*label{min-width:115px;font-weight:bold}*/
+
+  label{
+  width:140px;         /* ancho fijo, no mínimo */
+  display:inline-block;/* respeta el ancho aunque el texto sea corto */
+  font-weight:bold;
+}
+
+
   input[type=text],select{padding:6px;font-size:14px;border:1px solid #ccc;border-radius:4px;width:180px}
   input.highlight,select.highlight{border:2px solid orange}
   button{padding:8px 18px;font-size:14px;border:none;border-radius:4px;color:#fff;cursor:pointer}
@@ -21,6 +29,18 @@
   th{background:#f2f2f2}
   .logo{float:right;margin-left:20px;width:170px;border:2px solid #1b7e32;border-radius:4px}
   .radio-group{display:inline-flex;gap:4px;align-items:center}
+  /* ⬇️ añade esto justo después ⬇️ */
+.radio-group label{
+  min-width:auto;             /* quita los 115 px */
+}
+
+/* --- alineación de botones --- */
+.button-row{
+  margin-left:120px;   /* ajusta este número según veas */
+}
+
+
+
 </style>
 </head>
 <body>
@@ -52,24 +72,56 @@
       <option value="">Seleccione un ítem</option>
       <option>Club A</option><option>Club B</option>
     </select>
-    <label for="telefono">Teléfono:</label><input type="text" id="telefono">
+    <!--<label for="telefono">Teléfono:</label><input type="text" id="telefono">-->
+
+    <!-- NUEVA fila solo Teléfono -->
+<div class="form-row">
+  <label for="telefono">Teléfono:</label>
+  <input type="text" id="telefono">
+</div>
+
     <label for="sexo">Sexo:</label>
     <select id="sexo">
       <option value="">Seleccione un ítem</option>
       <option>Masculino</option><option>Femenino</option>
     </select>
-    <label>Seguro:</label>
+    
+    <!--
+    <label>Seguro:</label><br>
+   
     <span class="radio-group">
       <input type="radio" name="seguro" id="segSi" value="si"><label for="segSi">Sí</label>
       <input type="radio" name="seguro" id="segNo" value="no" checked><label for="segNo">No</label>
     </span>
   </div>
+-->
 
-  <div class="form-row">
+<!-- NUEVA FILA SOLO PARA SEGURO -->
+<div class="form-row">
+  <label>Seguro:</label>
+
+  <span class="radio-group">
+      <input type="radio" name="seguro" id="segSi" value="si"><label for="segSi">Sí</label>
+      <input type="radio" name="seguro" id="segNo" value="no" checked><label for="segNo">No</label>
+    </span>
+  </div>
+
+  <!--
+   <div class="form-row">
     <button class="btn-save" onclick="guardar()">Guardar</button>
     <button class="btn-clear" onclick="limpiar()">Limpiar Campos</button>
     <button class="btn-delete" onclick="eliminar()">Eliminar</button>
   </div>
+-->
+<div class="form-row button-row">
+  <button class="btn-save" onclick="guardar()">Guardar</button>
+  <button class="btn-clear" onclick="limpiar()">Limpiar Campos</button>
+  <button class="btn-delete" onclick="eliminar()">Eliminar</button>
+</div>
+
+
+
+
 
   <table>
     <thead>
